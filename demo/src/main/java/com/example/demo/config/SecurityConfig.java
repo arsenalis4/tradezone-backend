@@ -54,9 +54,9 @@ public class SecurityConfig {
                     .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                     .requestMatchers("/test/**", "/uploads/**").permitAll()
                     
-                    // 게시글 API - GET 요청은 공개, 나머지는 인증 필요
+                    // 게시글 API - 좋아요는 인증 필요, GET 요청은 공개, 나머지는 인증 필요
+                    .requestMatchers(HttpMethod.POST, "/api/posts/*/like").authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/posts/**/like").authenticated()
                     .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
                     .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
@@ -67,12 +67,12 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.PUT, "/api/categories/**").authenticated()
                     .requestMatchers(HttpMethod.DELETE, "/api/categories/**").authenticated()
                     
-                    // 댓글 API - 특정 GET 요청은 공개, 나머지는 인증 필요
+                    // 댓글 API - 좋아요는 인증 필요, 특정 GET 요청은 공개, 나머지는 인증 필요
+                    .requestMatchers(HttpMethod.POST, "/api/comments/*/like").authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/comments/*").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/comments/post/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/comments/author/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/comments/count/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/comments/**/like").authenticated()
                     .requestMatchers("/api/comments/**").authenticated()
                     
                     // 파일 API - GET은 공개, POST는 인증 필요
