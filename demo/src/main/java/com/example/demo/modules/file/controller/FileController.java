@@ -48,9 +48,7 @@ public class FileController {
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "업로드할 파일", required = true, 
                       content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
-            @RequestParam("file") MultipartFile file,
-            @Parameter(description = "파일 설명")
-            @RequestParam(value = "description", required = false) String description) {
+            @RequestParam("file") MultipartFile file) {
         try {
             FileDto.UploadResponse response = fileService.uploadFile(file, userPrincipal.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
