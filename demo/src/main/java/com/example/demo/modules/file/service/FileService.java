@@ -8,18 +8,19 @@ import com.example.demo.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,12 +30,10 @@ public class FileService {
 
     private final FileRepository fileRepository;
     private final UserRepository userRepository;
+    private final S3Client s3Client;
 
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
-
-    @Value("${file.upload-dir}")
-    private String uploadDir;
 
     public FileDto.UploadResponse uploadFile(MultipartFile file, Long uploaderId) {
         if (file.isEmpty()) {
@@ -47,12 +46,25 @@ public class FileService {
         try {
             String originalFileName = file.getOriginalFilename();
             String storedFileName = generateStoredFileName(originalFileName);
-            String filePath = uploadToS3(file, storedFileName);
+            String s3Key = "uploads/" + storedFileName;
+            
+            // S3에 파일 업로드
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .contentType(file.getContentType())
+                    .contentLength(file.getSize())
+                    .build();
+
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+
+            String s3Url = String.format("https://%s.s3.%s.amazonaws.com/%s", 
+                    bucketName, "ap-northeast-2", s3Key);
 
             FileEntity fileEntity = FileEntity.builder()
                     .originalFileName(originalFileName)
                     .storedFileName(storedFileName)
-                    .filePath(filePath)
+                    .filePath(s3Url)
                     .fileSize(file.getSize())
                     .mimeType(file.getContentType())
                     .uploader(uploader)
@@ -67,7 +79,7 @@ public class FileService {
                     .file(fileResponse)
                     .build();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("파일 업로드 실패: {}", e.getMessage());
             throw new RuntimeException("파일 업로드에 실패했습니다: " + e.getMessage());
         }
@@ -78,6 +90,35 @@ public class FileService {
         FileEntity file = fileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다: " + id));
         return convertToResponse(file);
+    }
+
+    public void deleteFile(Long fileId, Long uploaderId) {
+        FileEntity file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new RuntimeException("파일을 찾을 수 없습니다: " + fileId));
+
+        // 업로더 권한 확인
+        if (!file.getUploader().getId().equals(uploaderId)) {
+            throw new RuntimeException("파일 삭제 권한이 없습니다");
+        }
+
+        // S3에서 파일 삭제
+        try {
+            String s3Key = "uploads/" + file.getStoredFileName();
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .build();
+
+            s3Client.deleteObject(deleteObjectRequest);
+            
+            // DB에서 파일 정보 삭제
+            fileRepository.delete(file);
+            log.info("파일 삭제됨: {}", file.getOriginalFileName());
+            
+        } catch (Exception e) {
+            log.error("S3 파일 삭제 실패: {}", e.getMessage());
+            throw new RuntimeException("파일 삭제에 실패했습니다: " + e.getMessage());
+        }
     }
 
     private String generateStoredFileName(String originalFileName) {
@@ -92,14 +133,6 @@ public class FileService {
             return fileName.substring(fileName.lastIndexOf("."));
         }
         return "";
-    }
-
-    private String uploadToS3(MultipartFile file, String storedFileName) {
-        String s3Key = "uploads/" + storedFileName;
-        String s3Url = String.format("https://%s.s3.%s.amazonaws.com/%s", 
-                bucketName, "ap-northeast-2", s3Key);
-        log.info("S3 업로드 시뮬레이션: {} -> {}", file.getOriginalFilename(), s3Url);
-        return s3Url;
     }
 
     private FileDto.Response convertToResponse(FileEntity file) {

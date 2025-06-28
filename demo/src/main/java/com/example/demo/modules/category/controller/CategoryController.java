@@ -5,6 +5,7 @@ import com.example.demo.modules.category.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @Operation(summary = "카테고리 생성", description = "새로운 카테고리를 생성합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "카테고리 생성 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
@@ -59,6 +61,7 @@ public class CategoryController {
     }
 
     @Operation(summary = "카테고리 수정", description = "카테고리 정보를 수정합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDto.Response> updateCategory(
             @PathVariable Long id,
@@ -72,6 +75,7 @@ public class CategoryController {
     }
 
     @Operation(summary = "카테고리 삭제", description = "카테고리를 비활성화합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         try {

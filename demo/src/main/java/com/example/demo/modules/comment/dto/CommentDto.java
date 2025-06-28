@@ -1,5 +1,6 @@
 package com.example.demo.modules.comment.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class CommentDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "CommentCreateRequest", description = "댓글 생성 요청 DTO")
     public static class CreateRequest {
         @NotBlank(message = "댓글 내용은 필수입니다")
         private String content;
@@ -30,6 +32,7 @@ public class CommentDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "CommentUpdateRequest", description = "댓글 수정 요청 DTO")
     public static class UpdateRequest {
         @NotBlank(message = "댓글 내용은 필수입니다")
         private String content;
@@ -39,6 +42,7 @@ public class CommentDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "CommentResponse", description = "댓글 응답 DTO")
     public static class Response {
         private Long id;
         private String content;
@@ -56,6 +60,7 @@ public class CommentDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "CommentAuthorInfo", description = "댓글 작성자 정보 DTO")
     public static class AuthorInfo {
         private Long id;
         private String name;
@@ -67,6 +72,7 @@ public class CommentDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "CommentPostInfo", description = "댓글 게시글 정보 DTO")
     public static class PostInfo {
         private Long id;
         private String title;
@@ -76,6 +82,7 @@ public class CommentDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "CommentLikeRequest", description = "댓글 좋아요 요청 DTO")
     public static class LikeRequest {
         @NotNull(message = "댓글 ID는 필수입니다")
         private Long commentId;

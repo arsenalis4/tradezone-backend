@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +60,7 @@ public class UserController {
     }
 
     @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/users/me")
     public ResponseEntity<UserDto.Response> getMyInfo(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -67,6 +69,7 @@ public class UserController {
     }
 
     @Operation(summary = "사용자 정보 조회", description = "특정 사용자의 정보를 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDto.Response> getUserById(@PathVariable Long id) {
         try {
@@ -78,6 +81,7 @@ public class UserController {
     }
 
     @Operation(summary = "활성 사용자 목록 조회", description = "모든 활성 사용자 목록을 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/users")
     public ResponseEntity<List<UserDto.Response>> getAllActiveUsers() {
         List<UserDto.Response> users = userService.getAllActiveUsers();
@@ -85,6 +89,7 @@ public class UserController {
     }
 
     @Operation(summary = "내 정보 수정", description = "현재 로그인한 사용자의 정보를 수정합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/users/me")
     public ResponseEntity<UserDto.Response> updateMyInfo(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -94,6 +99,7 @@ public class UserController {
     }
 
     @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/users/me/password")
     public ResponseEntity<Void> changePassword(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -107,6 +113,7 @@ public class UserController {
     }
 
     @Operation(summary = "사용자 비활성화", description = "사용자를 비활성화합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deactivateUser(@PathVariable Long id) {
         try {
@@ -118,6 +125,7 @@ public class UserController {
     }
 
     @Operation(summary = "닉네임으로 사용자 검색", description = "닉네임으로 사용자를 검색합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/users/search")
     public ResponseEntity<List<UserDto.Response>> searchUsersByNickname(
             @RequestParam String nickname) {

@@ -1,5 +1,6 @@
 package com.example.demo.modules.post.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "PostCreateRequest", description = "게시글 생성 요청 DTO")
     public static class CreateRequest {
         @NotBlank(message = "제목은 필수입니다")
         private String title;
@@ -32,6 +34,7 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "PostUpdateRequest", description = "게시글 수정 요청 DTO")
     public static class UpdateRequest {
         private String title;
         private String content;
@@ -43,6 +46,7 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "PostResponse", description = "게시글 응답 DTO")
     public static class Response {
         private Long id;
         private String title;
@@ -60,6 +64,7 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "PostAuthorInfo", description = "게시글 작성자 정보 DTO")
     public static class AuthorInfo {
         private Long id;
         private String name;
@@ -71,6 +76,7 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "PostCategoryInfo", description = "게시글 카테고리 정보 DTO")
     public static class CategoryInfo {
         private Long id;
         private String name;
@@ -81,12 +87,17 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "PostSearchRequest", description = "게시글 검색 요청 DTO")
     public static class SearchRequest {
         private String keyword;
         private Long categoryId;
         private Long authorId;
         private Boolean isPublished;
+        
+        @Builder.Default
         private String sortBy = "createdAt";
+        
+        @Builder.Default
         private String sortDirection = "DESC";
         
         @Builder.Default
@@ -100,6 +111,7 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "PostLikeRequest", description = "게시글 좋아요 요청 DTO")
     public static class LikeRequest {
         @NotNull(message = "게시글 ID는 필수입니다")
         private Long postId;

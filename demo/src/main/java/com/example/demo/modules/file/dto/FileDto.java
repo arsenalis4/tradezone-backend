@@ -1,5 +1,6 @@
 package com.example.demo.modules.file.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +14,11 @@ public class FileDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "FileUploadRequest", description = "파일 업로드 요청 DTO")
     public static class UploadRequest {
         private String description;
+        
+        @Builder.Default
         private Boolean isPublic = false;
     }
 
@@ -22,6 +26,7 @@ public class FileDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "FileResponse", description = "파일 정보 응답 DTO")
     public static class Response {
         private Long id;
         private String originalFileName;
@@ -39,6 +44,7 @@ public class FileDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "FileUploaderInfo", description = "파일 업로더 정보 DTO")
     public static class UploaderInfo {
         private Long id;
         private String name;
@@ -49,6 +55,7 @@ public class FileDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "FileDownloadRequest", description = "파일 다운로드 요청 DTO")
     public static class DownloadRequest {
         private Long fileId;
     }
@@ -57,6 +64,7 @@ public class FileDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "FileUploadResponse", description = "파일 업로드 응답 DTO")
     public static class UploadResponse {
         private String message;
         private Response file;
@@ -66,6 +74,7 @@ public class FileDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @Schema(name = "FileListResponse", description = "파일 목록 응답 DTO")
     public static class ListResponse {
         private Long id;
         private String originalFileName;

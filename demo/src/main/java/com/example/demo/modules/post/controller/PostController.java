@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class PostController {
     private final PostService postService;
 
     @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "게시글 생성 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
@@ -121,6 +123,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     public ResponseEntity<PostDto.Response> updatePost(
             @PathVariable Long id,
@@ -135,6 +138,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long id,
@@ -148,6 +152,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 좋아요", description = "게시글에 좋아요를 추가합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{id}/like")
     public ResponseEntity<Void> likePost(@PathVariable Long id) {
         try {
