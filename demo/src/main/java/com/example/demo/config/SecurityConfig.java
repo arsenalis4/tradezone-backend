@@ -51,8 +51,11 @@ public class SecurityConfig {
                     .requestMatchers("/api/auth/**").permitAll()
                     
                     // Swagger 및 정적 리소스
-                    .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html", "/chat-test.html", "/test.html", "/index.html").permitAll()
                     .requestMatchers("/test/**", "/uploads/**").permitAll()
+                    
+                    // WebSocket 엔드포인트
+                    .requestMatchers("/ws/**").permitAll()
                     
                     // 게시글 API - 좋아요는 인증 필요, GET 요청은 공개, 나머지는 인증 필요
                     .requestMatchers(HttpMethod.POST, "/api/posts/*/like").authenticated()
@@ -84,6 +87,10 @@ public class SecurityConfig {
                     
                     // 통계 API - 모든 요청 인증 필요
                     .requestMatchers("/api/statistics/**").authenticated()
+                    
+                    // 채팅 API - GET 요청은 공개, 나머지는 인증 필요
+                    .requestMatchers(HttpMethod.GET, "/api/chat/rooms/**").permitAll()
+                    .requestMatchers("/api/chat/**").authenticated()
                     
                     // 사용자 API - /api/auth/** 외에는 모든 요청 인증 필요
                     .requestMatchers("/api/users/**").authenticated()
