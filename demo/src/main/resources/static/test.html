@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeZone Portfolio API 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .module-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .module-title {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .api-group {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .api-title {
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn-danger {
+            background: #f44336;
+        }
+        .btn-danger:hover {
+            background: #da190b;
+        }
+        .response {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .auth-section {
+            background: #e8f5e8;
+            border-left-color: #28a745;
+        }
+        .token-display {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .links {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 8px;
+        }
+        .links a {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .links a:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 TradeZone Portfolio API 테스트 페이지</h1>
+        
+        <div class="links">
+            <a href="/swagger-ui.html" target="_blank">📖 Swagger UI</a>
+            <a href="/api-docs" target="_blank">📄 API Docs</a>
+        </div>
+
+        <div id="tokenDisplay" class="token-display" style="display: none;">
+            <strong>인증 토큰:</strong> <span id="tokenValue"></span>
+        </div>
+
+        <!-- 사용자 인증 섹션 -->
+        <div class="module-section auth-section">
+            <h2 class="module-title">👤 사용자 인증 (User Authentication)</h2>
+            
+            <div class="api-group">
+                <div class="api-title">회원가입</div>
+                <div class="form-group">
+                    <label>이메일:</label>
+                    <input type="email" id="registerEmail" placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label>비밀번호:</label>
+                    <input type="password" id="registerPassword" placeholder="최소 8자">
+                </div>
+                <div class="form-group">
+                    <label>이름:</label>
+                    <input type="text" id="registerName" placeholder="홍길동">
+                </div>
+                <div class="form-group">
+                    <label>닉네임:</label>
+                    <input type="text" id="registerNickname" placeholder="gildong">
+                </div>
+                <button class="btn" onclick="register()">회원가입</button>
+                <div id="registerResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <div class="api-group">
+                <div class="api-title">로그인</div>
+                <div class="form-group">
+                    <label>이메일:</label>
+                    <input type="email" id="loginEmail" placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label>비밀번호:</label>
+                    <input type="password" id="loginPassword" placeholder="비밀번호">
+                </div>
+                <button class="btn" onclick="login()">로그인</button>
+                <div id="loginResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <div class="api-group">
+                <div class="api-title">내 정보 조회</div>
+                <button class="btn" onclick="getMyInfo()">내 정보 조회</button>
+                <div id="myInfoResponse" class="response" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- 카테고리 섹션 -->
+        <div class="module-section">
+            <h2 class="module-title">📁 카테고리 관리 (Category)</h2>
+            
+            <div class="api-group">
+                <div class="api-title">카테고리 생성</div>
+                <div class="form-group">
+                    <label>이름:</label>
+                    <input type="text" id="categoryName" placeholder="기술">
+                </div>
+                <div class="form-group">
+                    <label>설명:</label>
+                    <textarea id="categoryDescription" placeholder="기술 관련 글"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>색상:</label>
+                    <input type="color" id="categoryColor" value="#4CAF50">
+                </div>
+                <button class="btn" onclick="createCategory()">카테고리 생성</button>
+                <div id="createCategoryResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <div class="api-group">
+                <div class="api-title">카테고리 목록 조회</div>
+                <button class="btn" onclick="getCategories()">카테고리 목록</button>
+                <div id="categoriesResponse" class="response" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- 공지사항 -->
+        <div class="module-section">
+            <h2 class="module-title">📢 사용 안내</h2>
+            <p><strong>포트폴리오 구성:</strong></p>
+            <ul>
+                <li>🔐 <strong>User</strong> - 사용자 인증/인가 (JWT)</li>
+                <li>📁 <strong>Category</strong> - 카테고리 관리</li>
+                <li>📝 <strong>Post</strong> - 게시글 관리</li>
+                <li>💬 <strong>Comment</strong> - 댓글 시스템 (대댓글 지원)</li>
+                <li>📎 <strong>File</strong> - 파일 업로드/관리</li>
+                <li>🔔 <strong>Notification</strong> - 알림 시스템</li>
+                <li>📊 <strong>Statistics</strong> - 통계 관리</li>
+            </ul>
+            <p><strong>사용법:</strong></p>
+            <ol>
+                <li>먼저 <strong>회원가입</strong>을 하거나 기존 계정으로 <strong>로그인</strong>하세요</li>
+                <li>로그인 성공 시 JWT 토큰이 자동으로 저장됩니다</li>
+                <li>인증이 필요한 API는 자동으로 토큰을 사용합니다</li>
+                <li>Swagger UI에서 더 자세한 API 문서를 확인할 수 있습니다</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let authToken = '';
+
+        function showResponse(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        function setAuthToken(token) {
+            authToken = token;
+            document.getElementById('tokenDisplay').style.display = 'block';
+            document.getElementById('tokenValue').textContent = token;
+        }
+
+        async function apiCall(url, method = 'GET', body = null, requireAuth = false) {
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+
+            if (requireAuth && authToken) {
+                options.headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json().catch(() => ({}));
+                return { status: response.status, data: data };
+            } catch (error) {
+                return { status: 500, data: { error: error.message } };
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const name = document.getElementById('registerName').value;
+            const nickname = document.getElementById('registerNickname').value;
+
+            const result = await apiCall('/api/auth/register', 'POST', {
+                email, password, name, nickname
+            });
+
+            showResponse('registerResponse', result);
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const result = await apiCall('/api/auth/login', 'POST', {
+                email, password
+            });
+
+            if (result.status === 200 && result.data.accessToken) {
+                setAuthToken(result.data.accessToken);
+            }
+
+            showResponse('loginResponse', result);
+        }
+
+        async function getMyInfo() {
+            const result = await apiCall('/api/users/me', 'GET', null, true);
+            showResponse('myInfoResponse', result);
+        }
+
+        async function createCategory() {
+            const name = document.getElementById('categoryName').value;
+            const description = document.getElementById('categoryDescription').value;
+            const color = document.getElementById('categoryColor').value;
+
+            const result = await apiCall('/api/categories', 'POST', {
+                name, description, color
+            }, true);
+
+            showResponse('createCategoryResponse', result);
+        }
+
+        async function getCategories() {
+            const result = await apiCall('/api/categories', 'GET', null, false);
+            showResponse('categoriesResponse', result);
+        }
+    </script>
+</body>
+</html> 
